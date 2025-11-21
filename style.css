@@ -8142,3 +8142,320 @@ body:not(.tema-natal) .grinch-toggle {
         width: 75px;
     }
 }
+/* =======================================================
+ * 📅 CALENDÁRIO: CORREÇÃO GERAL (RESGATE)
+ * ======================================================= */
+
+/* 1. O Container Principal */
+.calendar-container-full {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr; /* Divide: Calendário (Esq) | Detalhes (Dir) */
+    gap: 0;
+    max-width: 1100px;
+    margin: 0 auto;
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+    overflow: hidden;
+    border: 1px solid #eee;
+}
+
+/* 2. Painel Esquerdo (Onde fica o calendário) */
+.calendar-left-panel {
+    padding: 40px;
+    background-color: #fff;
+}
+
+/* 3. Cabeçalho (Mês e Setas) - ISSO ESTAVA FALTANDO */
+.calendar-header-full {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    width: 100%;
+}
+
+.calendar-header-full h3 {
+    font-family: var(--font-heading);
+    color: var(--color-secondary);
+    font-size: 1.8em;
+    text-transform: capitalize;
+    margin: 0;
+    font-weight: 800;
+}
+
+/* Botões das Setas */
+.nav-btn-full {
+    background: transparent;
+    border: 1px solid #ddd;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--color-secondary);
+    font-size: 1em;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-btn-full:hover {
+    background-color: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+}
+
+/* 4. Dias da Semana (Dom, Seg...) - ISSO CONSERTA A LISTA VERTICAL */
+.weekdays-full {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr); /* 7 colunas lado a lado */
+    list-style: none; /* Remove as bolinhas feias */
+    padding: 0;
+    margin: 0 0 15px 0;
+    width: 100%;
+    text-align: center;
+}
+
+.weekdays-full li {
+    font-weight: 800;
+    color: #aaa;
+    text-transform: uppercase;
+    font-size: 0.85em;
+    letter-spacing: 1px;
+}
+
+/* 5. Grade de Dias (Números) */
+.days-full {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-auto-rows: 90px; /* Altura fixa para não quebrar */
+    gap: 10px;
+    list-style: none; /* Remove bolinhas */
+    padding: 0;
+    width: 100%;
+}
+
+/* Estilo do Quadrado do Dia */
+.days-full li {
+    height: 100%;
+    overflow: hidden; /* Corta texto grande */
+    border-radius: 12px;
+    border: 1px solid #f5f5f5;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+    
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 8px;
+    
+    font-size: 1.1em;
+    font-weight: 600;
+    color: var(--color-text-dark);
+    background-color: #fff;
+}
+
+/* Hover */
+.days-full li:hover:not(.inactive) {
+    border-color: var(--color-primary);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    z-index: 2;
+}
+
+/* Dia Inativo (Cinza) */
+.days-full li.inactive {
+    background-color: #fafafa;
+    color: #ddd;
+    pointer-events: none;
+}
+
+/* Dia Atual (Verde) */
+.days-full li.current-day {
+    background-color: #f0fdf4;
+    border: 2px solid var(--color-primary);
+    color: var(--color-primary);
+}
+
+/* Dia Selecionado (Marrom) */
+.days-full li.selected-day {
+    background-color: var(--color-secondary) !important;
+    color: white !important;
+    border-color: var(--color-secondary);
+}
+
+/* 6. Lado Direito (Detalhes) */
+.calendar-right-panel {
+    background-color: #f9f9f9;
+    padding: 40px;
+    border-left: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Responsividade para Celular */
+@media (max-width: 900px) {
+    .calendar-container-full {
+        grid-template-columns: 1fr; /* Vira uma coluna só */
+    }
+    .calendar-right-panel {
+        border-left: none;
+        border-top: 1px solid #eee;
+        min-height: 300px;
+    }
+    .days-full {
+        grid-auto-rows: 60px; /* Dias menores no celular */
+    }
+    .days-full li {
+        font-size: 1em;
+    }
+}
+/* =======================================================
+ * 📅 AJUSTES VISUAIS (ÍCONES & FOTOS)
+ * ======================================================= */
+
+/* 1. O Símbolo dentro do Dia */
+.event-icon-marker {
+    font-size: 1.8em; /* Ícone grande */
+    margin-top: auto; /* Empurra para baixo */
+    margin-bottom: auto; /* Centraliza verticalmente se quiser */
+    align-self: center; /* Centraliza horizontalmente */
+    opacity: 0.8;
+    transition: all 0.3s ease;
+}
+
+/* Cores dos Símbolos */
+.type-acao .event-icon-marker { color: var(--color-primary); } /* Verde */
+.type-feriado .event-icon-marker { color: #d92d2d; } /* Vermelho */
+
+/* Efeito ao selecionar o dia */
+.selected-day .event-icon-marker {
+    color: white !important;
+    transform: scale(1.2);
+}
+
+/* Esconde a pílula de texto antiga se ela ainda estiver lá */
+.event-pill { display: none !important; }
+
+
+/* 2. A Imagem no Painel Lateral */
+.event-feature-image {
+    width: 100%;
+    height: 180px; /* Altura fixa para ficar bonito */
+    overflow: hidden;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    display: none; /* Escondido por padrão */
+    animation: fadeIn 0.5s ease;
+}
+
+/* Classe para mostrar a imagem quando ela existe */
+.event-feature-image.has-image {
+    display: block;
+}
+
+.event-feature-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Garante que a foto preencha sem esticar */
+    transition: transform 0.5s ease;
+}
+
+.event-feature-image:hover img {
+    transform: scale(1.05); /* Zoom suave ao passar o mouse */
+}
+/* =======================================================
+ * 📸 GALERIA VERTICAL (EMPILHAR FOTOS)
+ * ======================================================= */
+.event-gallery-stack {
+    display: flex;
+    flex-direction: column; /* Empilha verticalmente */
+    gap: 12px; /* Espaço entre as fotos */
+    margin-bottom: 25px;
+    animation: fadeIn 0.5s ease;
+}
+
+.gallery-stack-item {
+    width: 100%;
+    height: 140px; /* Altura de cada foto */
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.gallery-stack-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.gallery-stack-item:hover img {
+    transform: scale(1.08);
+}
+/* =======================================================
+ * 🔧 AJUSTE INTELIGENTE: FOTO ÚNICA (ALTURA LIVRE)
+ * ======================================================= */
+
+/* Se o item for o ÚNICO filho da lista (ou seja, só tem 1 foto) */
+.gallery-stack-item:only-child {
+    height: auto !important; /* Remove a trava de altura do container */
+    aspect-ratio: auto; /* Remove proporções forçadas */
+}
+
+/* Ajusta a imagem interna para fluir naturalmente */
+.gallery-stack-item:only-child img {
+    height: auto !important; /* A imagem define a altura */
+    max-height: 350px; /* Limite de segurança para fotos verticais não ficarem gigantes */
+    object-fit: cover; /* Garante preenchimento bonito */
+}
+/* Adicione isso ao final do CSS */
+.days-full li.has-event {
+    position: relative; /* Necessário para o tooltip */
+}
+
+.days-full li.has-event::after {
+    content: attr(data-title); /* Pega o texto do atributo HTML */
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-5px);
+    background-color: #333;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, transform 0.3s;
+    pointer-events: none;
+    z-index: 10;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.days-full li.has-event:hover::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(-10px);
+}
+/* =======================================================
+ * 📱 REMOVER LUZES DE NATAL NO MOBILE
+ * ======================================================= */
+@media (max-width: 768px) {
+    /* Esconde as lâmpadas (pseudo-elementos) */
+    body.tema-natal .main-header::before,
+    body.tema-natal .main-header::after {
+        display: none !important;
+    }
+
+    /* Remove o fio preto grosso e restaura a sombra suave original */
+    body.tema-natal .main-header {
+        border-bottom: none !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important; 
+    }
+}

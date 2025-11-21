@@ -265,6 +265,10 @@ function navigateTo(pageId, anchorId = null) {
     else if (pageId === 'origem-alimentar') {
         setupOriginMap();
     }
+    // LÓGICA DA NOVA AGENDA
+    else if (pageId === 'agenda') {
+        setTimeout(() => { FullPageCalendar.init(); }, 100);
+    }
     // LÓGICA PARA ATIVAR O MURAL DE DESEJOS (FIREBASE)
     else if (pageId === 'mural-natal') { 
         if (typeof setupWishMural !== 'undefined') {
@@ -1884,8 +1888,231 @@ function setupWishMural() {
         sendWish(message, form);
     }
 }
+/* =======================================================
+ * 📅 LÓGICA DA NOVA AGENDA (ATUALIZADA COM LINKS)
+ * ======================================================= */
+const FullPageCalendar = {
+    date: new Date(),
+    today: new Date(),
+    
+    // Lista de Eventos (AGORA COM 'pageId' PARA NAVEGAÇÃO)
+    events: [
+        { 
+            date: "2025-10-23", 
+            title: "Ação Infantil & Idosos", 
+            type: "Ação", 
+            desc: "Atividades lúdicas e roda de conversa.", 
+            loc: "Escola Gilberto Freyre | Parque Santana",
+            pageId: "acao-infancia-detalhe", // <--- ID da seção no HTML
+            images: ["Imagens/acaoinfancia3.webp", "Imagens/acaoidosos4.webp"]
+        },
+        { 
+            date: "2025-10-24", 
+            title: "Ação Idosos (Dia 2)", 
+            type: "Ação", 
+            desc: "Continuação das atividades.", 
+            loc: "Parque Santana",
+            pageId: "acao-idoso-detalhe", // <--- ID da seção no HTML
+            images: ["Imagens/acaoidosos1.webp"] 
+        },
+        { 
+            date: "2025-11-03", 
+            title: "Ação Adultos", 
+            type: "Ação", 
+            desc: "Saúde do trabalhador e DCNT.", 
+            loc: "CDC",
+            pageId: "acao-adulto-detalhe", // <--- ID da seção no HTML
+            images: ["Imagens/acaoadultos1.webp"]
+        },
+        { 
+            date: "2025-11-05", 
+            title: "Ação Adultos (Dia 2)", 
+            type: "Ação", 
+            desc: "Palestras e avaliações.", 
+            loc: "CDC",
+            pageId: "acao-adulto-detalhe", // <--- ID da seção no HTML
+            images: ["Imagens/acaoadultos2.webp"]
+        },
+        { 
+            date: "2025-12-25", 
+            title: "Natal", 
+            type: "feriado", 
+            desc: "Feriado Nacional.", 
+            loc: "Em todo lugar", 
+            time: "Dia Todo",
+            images: ["Imagens/Farofa Festiva.webp", "Imagens/Rabanada de Forno.webp"]
+        }
+    ],
 
+    // Inicialização
+    init: function() {
+        const container = document.getElementById('calendar-days-full');
+        if(!container) return;
 
+        const prevBtn = document.getElementById('prev-month-full');
+        const nextBtn = document.getElementById('next-month-full');
+
+        if(prevBtn) {
+            const newPrev = prevBtn.cloneNode(true);
+            prevBtn.parentNode.replaceChild(newPrev, prevBtn);
+            newPrev.addEventListener('click', () => { 
+                this.date.setMonth(this.date.getMonth() - 1); 
+                this.render(); 
+            });
+        }
+        
+        if(nextBtn) {
+            const newNext = nextBtn.cloneNode(true);
+            nextBtn.parentNode.replaceChild(newNext, nextBtn);
+            newNext.addEventListener('click', () => { 
+                this.date.setMonth(this.date.getMonth() + 1); 
+                this.render(); 
+            });
+        }
+
+        this.render();
+    },
+
+    // Renderiza os dias do mês
+    render: function() {
+        const monthYear = document.getElementById('current-month-full');
+        const daysContainer = document.getElementById('calendar-days-full');
+        
+        this.date.setDate(1); 
+
+        const month = this.date.getMonth();
+        const year = this.date.getFullYear();
+        
+        const lastDay = new Date(year, month + 1, 0).getDate();
+        const prevLastDay = new Date(year, month, 0).getDate();
+        const firstDayIndex = this.date.getDay();
+        
+        const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+        
+        if(monthYear) monthYear.innerText = `${months[month]} ${year}`;
+        if(daysContainer) daysContainer.innerHTML = "";
+
+        for (let x = firstDayIndex; x > 0; x--) {
+            daysContainer.innerHTML += `<li class="inactive">${prevLastDay - x + 1}</li>`;
+        }
+
+        for (let i = 1; i <= lastDay; i++) {
+            let li = document.createElement('li');
+            let content = `<span>${i}</span>`; 
+            
+            const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+            
+            if (i === this.today.getDate() && month === this.today.getMonth() && year === this.today.getFullYear()) {
+                li.classList.add('current-day');
+            }
+
+            const event = this.events.find(e => e.date === dateStr);
+            
+            if (event) {
+                li.classList.add('has-event', `type-${event.type}`);
+                li.setAttribute('data-title', event.title); 
+                
+                let iconClass = 'fa-circle';
+                if(event.type === 'Ação') iconClass = 'fa-handshake'; 
+                if(event.type === 'feriado') iconClass = 'fa-star';   
+                
+                content += `<div class="event-icon-marker"><i class="fa-solid ${iconClass}"></i></div>`;
+            }
+
+            li.innerHTML = content;
+
+            li.addEventListener('click', () => {
+                document.querySelectorAll('.days-full li').forEach(el => el.classList.remove('selected-day'));
+                li.classList.add('selected-day');
+                this.showDetails(i, month, months, event);
+            });
+
+            daysContainer.appendChild(li);
+        }
+
+        if (typeof gsap !== 'undefined') {
+            gsap.fromTo(".days-full li", 
+                { opacity: 0, y: 20, scale: 0.9 }, 
+                { duration: 0.4, opacity: 1, y: 0, scale: 1, stagger: 0.03, ease: "back.out(1.5)" }
+            );
+        }
+    },
+
+    // Mostra os detalhes (AGORA COM O LINK FUNCIONAL)
+    showDetails: function(day, monthIndex, monthNames, event) {
+        const display = document.getElementById('event-card-display');
+        const fullDate = `${day} de ${monthNames[monthIndex]}`;
+
+        if (event) {
+            let iconClass = 'fa-calendar-check';
+            if(event.type === 'Ação') iconClass = 'fa-users';
+            if(event.type === 'feriado') iconClass = 'fa-star';
+
+            // Link do Google Agenda
+            const googleDate = event.date.replace(/-/g, '') + 'T090000';
+            const googleDateEnd = event.date.replace(/-/g, '') + 'T120000';
+            const googleUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&details=${encodeURIComponent(event.desc)}&location=${encodeURIComponent(event.loc)}&dates=${googleDate}/${googleDateEnd}`;
+
+            let galleryHTML = '';
+            if (event.images && event.images.length > 0) {
+                galleryHTML = '<div class="event-gallery-stack">';
+                event.images.forEach(imgSrc => {
+                    galleryHTML += `<div class="gallery-stack-item"><img src="${imgSrc}" alt="Foto do evento"></div>`;
+                });
+                galleryHTML += '</div>';
+            } else {
+                galleryHTML = '<div class="event-feature-image" style="height: 50px; background: transparent; box-shadow: none;"></div>';
+            }
+
+            // Configura o botão de "Ver Relato"
+            // Se o evento tiver um pageId, cria o botão com onclick="navigateTo..."
+            // Caso contrário, não mostra o botão.
+            let actionButtonHTML = '';
+            if (event.type === 'Ação' && event.pageId) {
+                actionButtonHTML = `
+                    <a href="#" onclick="navigateTo('${event.pageId}'); return false;" class="cta-button" style="padding: 10px 20px; font-size:0.9em; flex:1; text-align:center;">
+                        Ver Relato Completo
+                    </a>
+                `;
+            }
+
+            display.innerHTML = `
+                <div class="event-card-full">
+                    ${galleryHTML} <span class="date-badge">${fullDate}</span>
+                    <h2>${event.title}</h2>
+                    <p>${event.desc}</p>
+                    
+                    <div class="event-meta-grid">
+                        <div class="meta-item">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <span>${event.loc}</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fa-solid ${iconClass}"></i>
+                            <span style="text-transform: capitalize;">${event.type}</span>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:15px;">
+                        ${actionButtonHTML}
+                        
+                        <a href="${googleUrl}" target="_blank" class="cta-button" style="background: #fff; color: var(--color-primary) !important; border: 2px solid var(--color-primary); padding: 10px 20px; font-size:0.9em; flex:1; display: flex; align-items: center; justify-content: center; gap: 8px; text-align:center;">
+                            <i class="fa-solid fa-calendar-plus"></i> Salvar
+                        </a>
+                    </div>
+                </div>
+            `;
+        } else {
+            display.innerHTML = `
+                <div class="empty-state-full">
+                    <i class="fa-regular fa-calendar"></i>
+                    <h4 style="color: var(--color-secondary);">${fullDate}</h4>
+                    <p>Não há eventos agendados para este dia.</p>
+                </div>
+            `;
+        }
+    }
+};
 // =======================================================
 // CHAMADAS GERAIS (Roda APÓS A DEFINIÇÃO das funções)
 // =======================================================
