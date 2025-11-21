@@ -8460,29 +8460,16 @@ body:not(.tema-natal) .grinch-toggle {
     }
 }
 /* =======================================================
- * 📱 MOBILE: REMOVER TEMA DE NATAL (PERFORMANCE + LIMPEZA)
+ * ❄️ REMOVEDOR DE NEVE (FORÇA BRUTA) - MOBILE
  * ======================================================= */
-@media (max-width: 768px) {
+@media screen and (max-width: 900px) {
     
-    /* 1. Remove as LUZES (bolinhas coloridas) */
-    body.tema-natal .main-header::before,
-    body.tema-natal .main-header::after {
-        display: none !important;
-        content: none !important;
-    }
-
-    /* 2. Remove o FIO PRETO e restaura a sombra normal */
-    body.tema-natal .main-header {
-        border-bottom: none !important;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
-    }
-
-    /* 3. Remove a NEVE (fundo e frente) para economizar bateria */
-    body.tema-natal::before,
-    body.tema-natal::after {
-        display: none !important;
+    html body.tema-natal::before,
+    html body.tema-natal::after {
         background-image: none !important;
         animation: none !important;
+        display: none !important;
         content: none !important;
+        opacity: 0 !important;
     }
 }
