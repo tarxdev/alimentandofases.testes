@@ -6225,287 +6225,6 @@ body section#adolescencia .news-card__excerpt strong {
     /* Garante que o botão fique abaixo do section-description */
 }
 /* =======================================================
- * 📅 CALENDÁRIO PREMIUM (COMPACTO & SEGURO)
- * ======================================================= */
-
-/* 1. Botão Flutuante */
-.calendar-fab-container {
-    position: fixed;
-    bottom: 25px;
-    right: 25px;
-    z-index: 9990;
-}
-
-.calendar-fab {
-    background: linear-gradient(135deg, var(--color-secondary), #8a4b29);
-    color: white;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    border: none;
-    font-size: 1.8em;
-    cursor: pointer;
-    box-shadow: 0 8px 20px rgba(110, 81, 61, 0.4);
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.calendar-fab:hover {
-    transform: scale(1.1) rotate(-10deg);
-    box-shadow: 0 12px 25px rgba(110, 81, 61, 0.6);
-}
-
-/* 2. Janela "Glassmorphism" (Compacta) */
-.calendar-popup {
-    position: fixed;
-    bottom: 90px;
-    right: 25px;
-    width: 330px; /* Largura levemente ajustada */
-    
-    /* --- SEGURANÇA DE ALTURA --- */
-    height: 530px; /* Altura fixa segura */
-    max-height: 80vh; /* Impede que corte em telas baixas */
-    display: flex;
-    flex-direction: column;
-    /* --------------------------- */
-    
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    
-    border-radius: 20px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
-    z-index: 10000;
-    overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.8);
-    
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    transform-origin: bottom right;
-}
-
-.calendar-popup.hidden {
-    opacity: 0;
-    transform: translateY(20px) scale(0.9);
-    pointer-events: none;
-}
-
-/* 3. Cabeçalho (Mais fino) */
-.calendar-popup-header {
-    background: linear-gradient(135deg, var(--color-secondary), #5d3a2a);
-    padding: 15px 20px; /* Padding reduzido */
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: relative;
-    overflow: hidden;
-    flex-shrink: 0;
-}
-
-.calendar-popup-header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url('https://www.transparenttextures.com/patterns/cubes.png');
-    opacity: 0.1;
-    pointer-events: none;
-}
-
-.calendar-popup-header h4 {
-    margin: 0;
-    font-family: var(--font-heading);
-    font-size: 1.1em;
-    color: white;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.calendar-popup-header .close-btn {
-    background: rgba(255,255,255,0.2);
-    border: none;
-    color: white;
-    cursor: pointer;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s;
-    font-size: 0.9em;
-}
-
-.calendar-popup-header .close-btn:hover {
-    background: rgba(255,255,255,0.4);
-}
-
-/* 4. Corpo do Calendário */
-.calendar-wrapper-mini {
-    padding: 15px; /* Padding reduzido */
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto; /* Permite scroll se a tela for MUITO pequena */
-}
-
-.calendar-header-mini {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px; /* Margem reduzida */
-}
-
-.calendar-header-mini span {
-    font-weight: 800;
-    color: var(--color-primary);
-    font-family: var(--font-heading);
-    text-transform: capitalize;
-    font-size: 1em;
-}
-
-.calendar-header-mini button {
-    background: white;
-    border: 1px solid #eee;
-    border-radius: 8px;
-    cursor: pointer;
-    color: var(--color-secondary);
-    width: 28px; /* Botão menor */
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
-
-.calendar-header-mini button:hover {
-    background-color: var(--color-primary);
-    color: white;
-    border-color: var(--color-primary);
-}
-
-/* Dias da Semana */
-.weekdays-mini {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    list-style: none;
-    padding: 0;
-    margin: 0 0 5px 0; /* Margem reduzida */
-    text-align: center;
-}
-
-.weekdays-mini li {
-    font-size: 0.7em;
-    font-weight: 800;
-    color: #aaa;
-    text-transform: uppercase;
-}
-
-/* Grade de Dias (Compactada) */
-.days-mini {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 3px; /* Gap bem justo */
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.days-mini li {
-    height: 32px; /* Altura reduzida (era 38px) */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.9em;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s;
-    color: var(--color-text-dark);
-    position: relative;
-    border: 1px solid transparent;
-}
-
-.days-mini li:hover:not(.inactive) {
-    background-color: #f0fdf4;
-    color: var(--color-primary);
-    transform: scale(1.1);
-    z-index: 2;
-}
-
-.days-mini li.inactive {
-    color: #e0e0e0;
-    pointer-events: none;
-}
-
-/* Estilos Visuais */
-.days-mini li.today {
-    background-color: var(--color-secondary);
-    color: white !important;
-    box-shadow: 0 2px 8px rgba(110, 81, 61, 0.3);
-    font-weight: bold;
-}
-
-.days-mini li.has-event::after {
-    content: '';
-    position: absolute;
-    bottom: 3px;
-    width: 4px;
-    height: 4px;
-    background-color: var(--color-primary);
-    border-radius: 50%;
-}
-
-.days-mini li.has-event.today::after {
-    background-color: white;
-}
-
-.days-mini li.in-range-mini {
-    background-color: #fff0f0;
-    color: #c0392b;
-    border-radius: 0;
-}
-.days-mini li.in-range-mini:first-child, 
-.days-mini li.in-range-start {
-    border-radius: 8px 0 0 8px;
-}
-.days-mini li.in-range-mini:last-child,
-.days-mini li.in-range-end {
-    border-radius: 0 8px 8px 0;
-}
-
-/* --- Área de Detalhes (Fundo) --- */
-.event-info-mini {
-    margin-top: auto; /* Empurra para o fundo */
-    padding: 12px;
-    background: linear-gradient(to right, #f9f9f9, #fff);
-    border-radius: 10px;
-    font-size: 0.85em; /* Fonte um pouco menor */
-    border-left: 4px solid var(--color-secondary);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.03);
-    min-height: 65px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.event-info-mini strong {
-    color: var(--color-secondary);
-    font-size: 1.1em;
-    display: block;
-    margin-bottom: 3px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-/* =======================================================
  * AJUSTE DE ALINHAMENTO MOBILE (CHATBOT E CALENDÁRIO)
  * ======================================================= */
 @media (max-width: 480px) {
@@ -6515,26 +6234,6 @@ body section#adolescencia .news-card__excerpt strong {
         left: 15px !important;
         right: auto !important;
     }
-
-    /* Força o Calendário a ficar na direita e na mesma altura */
-    .calendar-fab-container {
-        bottom: 15px !important;
-        right: 15px !important;
-        left: auto !important;
-    }
-}
-/* =======================================================
- * CORREÇÃO FINAL: ESCONDER VLIBRAS NO CALENDÁRIO
- * ======================================================= */
-
-/* Quando o calendário abre, o JS adiciona a classe .calendar-open no corpo do site.
-   Esta regra pega o widget do VLibras ([vw]) e o esconde completamente. */
-
-body.calendar-open [vw] {
-    display: none !important;       /* Remove da tela */
-    visibility: hidden !important;  /* Garante invisibilidade */
-    z-index: -1 !important;         /* Joga para trás de tudo por segurança */
-    opacity: 0 !important;
 }
 /* =======================================================
  * 🎄 TEMA DE NATAL COMPLETO (Versão Final - Neve + Luzes + Noel)
@@ -7145,7 +6844,6 @@ summary,
 .pointer, 
 .cards_item, 
 .game-close-btn, 
-.calendar-fab,
 .map-hotspot,
 .planner-day {
     /* Inverte: Vinho com Borda Dourada */
@@ -8203,5 +7901,244 @@ textarea {
         
         /* Garante que ela não fique cortada embaixo */
         padding-bottom: 40px; 
+    }
+}
+/* =======================================================
+ * 😒 MODO GRINCH (BOTÃO TOGGLE)
+ * ======================================================= */
+
+.grinch-toggle {
+    margin-top: 20px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #ddd;
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-size: 0.85em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.grinch-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+/* Estilo quando o Natal está DESATIVADO (O site vira Grinch) */
+body:not(.tema-natal) .grinch-toggle {
+    background-color: #7ec35d; /* Verde Grinch */
+    color: #1a4a2a; /* Verde Escuro */
+    border-color: #7ec35d;
+    font-weight: 700;
+    box-shadow: 0 0 10px rgba(126, 195, 93, 0.4);
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+    .grinch-toggle {
+        font-size: 0.8em;
+        padding: 6px 12px;
+    }
+}
+/* =======================================================
+ * 📱 CORREÇÃO FINAL: ESPAÇAMENTO E FORMATO (MOBILE)
+ * ======================================================= */
+@media (max-width: 1024px) {
+
+    /* 1. Ajuste do Container (Aumentei o espaço no topo) */
+    .main-header__list-item.menu-cta-button {
+        /* AUMENTADO DE 15px PARA 35px PARA DESCOLAR DE "AÇÕES" */
+        margin-top: 8px !important;    
+        
+        margin-bottom: 40px !important; 
+        border-bottom: none !important;
+        
+        display: flex !important;
+        justify-content: center !important;
+        width: 100% !important;
+    }
+
+    /* 2. O Botão (Retangular com cantos suaves) */
+    .main-header__list-item.menu-cta-button > a {
+        width: 95% !important;  
+        max-width: none !important;
+        
+        border-radius: 8px !important; 
+        
+        padding: 20px !important; 
+        text-align: center !important;
+        display: block !important;
+        
+        /* Estilo Vermelho e Dourado */
+        background: linear-gradient(135deg, #8a2626 0%, #992D2D 100%) !important;
+        color: white !important;
+        border: 2px solid #FFD700 !important;
+        
+        font-weight: 800 !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+    }
+    
+    .main-header__list-item.menu-cta-button > a:active {
+        transform: scale(0.98);
+    }
+
+    /* 3. Ajuste da Borda Dourada Interna (Para não parecer caixa dupla) */
+    body.tema-natal .main-header__list-item.menu-cta-button > a::after {
+        border-radius: 8px !important;
+        inset: -2px !important;
+        padding: 0 !important;
+    }
+}
+/* =======================================================
+ * 📱 MELHORIA: SUBMENU MOBILE (ORGANIZAÇÃO & DESIGN)
+ * ======================================================= */
+@media (max-width: 1024px) {
+
+    /* 1. O Container do Submenu (A caixa que abre) */
+    .submenu-list__wrapper {
+        background-color: rgba(255, 255, 255, 0.5) !important; /* Fundo semi-transparente para destacar */
+        border-radius: 12px !important;
+        margin: 10px 10px 20px 10px !important; /* Afasta das bordas */
+        padding: 15px !important;
+        border: 1px solid rgba(0,0,0,0.05) !important;
+    }
+
+    /* 2. Os Itens da Lista (Links principais do submenu) */
+    .submenu-list__item-wrapper {
+        padding: 12px 10px !important;
+        border-bottom: 1px dashed rgba(0,0,0,0.1) !important; /* Linha separadora sutil */
+        border-radius: 0 !important; /* Remove borda arredondada individual */
+        margin-bottom: 5px !important;
+    }
+
+    /* Remove a linha do último item para ficar limpo */
+    .submenu-list__item:last-child .submenu-list__item-wrapper {
+        border-bottom: none !important;
+    }
+
+    /* 3. Títulos dos Itens (Ex: "Receitas", "Rotulagem") */
+    .submenu-list__item-title {
+        font-weight: 700 !important;
+        color: #3D7938 !important; /* Verde (ou use var(--color-primary)) */
+        font-size: 1em !important;
+        display: block !important;
+        margin-bottom: 2px !important;
+    }
+
+    /* 4. Subtítulos (As descrições pequenas) */
+    .submenu-list__item-subtile {
+        font-size: 0.85em !important;
+        color: #666 !important;
+        font-style: italic !important;
+        display: block !important;
+    }
+
+    /* 5. Ícone de Seta (Se houver) - Ajuste ou Remoção */
+    /* Se você quiser esconder a setinha lateral no mobile para limpar mais: */
+    .submenu-list__item-wrapper svg {
+        display: none !important;
+    }
+    
+    /* Efeito de Toque (Feedback visual) */
+    .submenu-list__item-wrapper:active {
+        background-color: rgba(0,0,0,0.05) !important;
+        border-radius: 8px !important;
+    }
+}
+/* =======================================================
+ * 🔧 AJUSTE FINAL: BOTÕES DO MENU LATERAL MAIS GROSSOS
+ * (Cole isso no final do arquivo style.css)
+ * ======================================================= */
+@media (min-width: 1025px) {
+    a.submenu-list__item-wrapper {
+        /* ALTURA (Vertical) */
+        padding-top: 10px !important;
+        padding-bottom: 10px !important;
+
+        /* LARGURA (Horizontal) */
+        padding-left: 30px !important;  /* Empurra o texto da esquerda */
+        padding-right: 30px !important; /* Empurra da direita */
+    }
+}
+/* =======================================================
+ * 📱 AJUSTE: CONTEÚDOS EM DESTAQUE EMPILHADOS (MOBILE)
+ * ======================================================= */
+@media (max-width: 768px) {
+    #conteudos-destaque .grid-container {
+        /* Força 1 coluna (um embaixo do outro) */
+        grid-template-columns: 1fr !important; 
+        
+        /* Ajusta o espaçamento */
+        gap: 30px !important;
+        padding: 0 10px;
+    }
+
+    /* Garante que a imagem do card ocupe a largura total */
+    #conteudos-destaque .card--has-image {
+        width: 100%;
+        max-width: 400px; /* Impede que fique gigante em tablets */
+        margin: 0 auto; /* Centraliza */
+    }
+}
+/* =======================================================
+ * 🖥️ CORREÇÃO: JOGO ALINHADO (LARGURAS IGUAIS)
+ * ======================================================= */
+@media (min-width: 1025px) {
+
+    /* 1. Container Principal */
+    #classify-game-area-embedded {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    /* 2. As Caixas de Cima (Dropzones) */
+    .classify-dropzones {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr); /* 3 colunas iguais */
+        gap: 20px;
+        
+        /* LARGURA TRAVADA */
+        width: 100%;
+        max-width: 900px; /* Define o limite */
+        
+        margin: 0 auto 30px auto; /* Centraliza e dá espaço embaixo */
+    }
+
+    .classify-zone {
+        width: 100%;
+        height: 140px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* 3. A Barra de Alimentos de Baixo */
+    #infancia .classify-food-bank {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap; /* Linha única */
+        justify-content: center; /* Itens no meio */
+        gap: 10px;
+        
+        /* LARGURA TRAVADA IGUAL À DE CIMA */
+        width: 100%;
+        max-width: 900px; /* Mesmo valor de cima para alinhar */
+        
+        padding: 20px;
+        background-color: rgba(0,0,0,0.03); /* Fundo cinza sutil */
+        border-radius: 12px;
+        margin: 0 auto; /* Centraliza */
+    }
+
+    /* Tamanho fixo para os itens para caberem bem */
+    #infancia .classify-food-item {
+        flex: 0 0 75px; /* Largura fixa */
+        height: 75px;   /* Altura fixa */
+        width: 75px;
     }
 }

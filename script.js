@@ -1547,17 +1547,6 @@ function setupChatbotToggle() {
         toggleBtn.classList.toggle('hidden');
 
         if (isHidden) {
-            // Se abriu, fecha o calendário se estiver aberto
-            const calendarPopup = document.getElementById('calendar-popup');
-            if (calendarPopup && !calendarPopup.classList.contains('hidden')) {
-                 // Usa a função de fechar do calendário para garantir a limpeza do body
-                 if (typeof MiniCalendar !== 'undefined' && MiniCalendar.close) {
-                    MiniCalendar.close();
-                 } else {
-                    calendarPopup.classList.add('hidden');
-                    document.body.classList.remove('calendar-open');
-                 }
-            }
             // Foca no input
             const input = document.getElementById('chatbot-input');
             if (input) setTimeout(() => input.focus(), 400);
@@ -1592,206 +1581,6 @@ function setupChatbotToggle() {
         }
     });
 }
-
-
-/* =======================================================
- * 📅 LÓGICA DO CALENDÁRIO POPUP (CORRIGIDO, VISUAL PREMIUM)
- * ======================================================= */
-const MiniCalendar = {
-    date: new Date(),
-    today: new Date(),
-    
-    // BANCO DE DADOS DE EVENTOS (Datas no formato AAAA-MM-DD)
-    events: [
-        // Dia 23 teve duas ações (Infantil + Início Idosos)
-        { date: "2025-10-23", title: "Ação Infantil & Idosos (Dia 1)", type: "acao" },
-        
-        // Dia 24 foi a continuação dos Idosos
-        { date: "2025-10-24", title: "Ação Idosos (Dia 2)", type: "acao" },
-        
-        { date: "2025-11-03", title: "Ação Adultos", type: "acao" },
-        { date: "2025-11-05", title: "Ação Adultos (Dia 2)", type: "acao" },
-        { date: "2025-12-25", title: "Natal", type: "feriado" }
-    ],
-    // Intervalos (Ex: Temporada de Natal)
-    ranges: [
-        { start: "2025-12-01", end: "2026-01-06", title: "Temporada de Natal", type: "sazonal" }
-    ],
-
-    init: function() {
-        const toggleBtn = document.getElementById('calendar-toggle-btn');
-        const closeBtn = document.getElementById('calendar-close-btn');
-        const popup = document.getElementById('calendar-popup');
-        const prevBtn = document.getElementById('prev-month-mini');
-        const nextBtn = document.getElementById('next-month-mini');
-
-        if(!toggleBtn || !popup) return; 
-
-        // 1. Abrir/Fechar
-        const toggleCal = () => {
-            const isHidden = popup.classList.contains('hidden');
-            if(isHidden) {
-                this.open();
-            } else {
-                this.close();
-            }
-        };
-
-        toggleBtn.addEventListener('click', toggleCal);
-        closeBtn.addEventListener('click', toggleCal);
-
-        // 👇 NOVO: FECHAR AO CLICAR FORA
-        document.addEventListener('click', (event) => {
-            // Se o calendário está ABERTO...
-            if (!popup.classList.contains('hidden')) {
-                // ...e o clique NÃO foi dentro do calendário...
-                // ...e o clique NÃO foi no botão que abre o calendário...
-                if (!popup.contains(event.target) && !toggleBtn.contains(event.target)) {
-                    this.close();
-                }
-            }
-        });
-
-        // 2. Navegação Meses
-        prevBtn.addEventListener('click', () => {
-            this.date.setMonth(this.date.getMonth() - 1);
-            this.render();
-        });
-        nextBtn.addEventListener('click', () => {
-            this.date.setMonth(this.date.getMonth() + 1);
-            this.render();
-        });
-
-        this.render();
-    },
-    
-    open: function() {
-        const popup = document.getElementById('calendar-popup');
-        if (!popup) return;
-        
-        popup.classList.remove('hidden');
-        document.body.classList.add('calendar-open');
-        
-        // Fecha o chatbot se estiver aberto
-        const chatWindow = document.getElementById('chatbot-window');
-        const chatToggleBtn = document.getElementById('chatbot-toggle-btn');
-        
-        if(chatWindow && !chatWindow.classList.contains('hidden')) {
-            chatWindow.classList.add('hidden');
-            if(chatToggleBtn) chatToggleBtn.classList.remove('hidden');
-        }
-    },
-    
-    close: function() {
-        const popup = document.getElementById('calendar-popup');
-        if (!popup) return;
-        
-        popup.classList.add('hidden');
-        document.body.classList.remove('calendar-open');
-    },
-
-    render: function() {
-        const monthYear = document.getElementById('current-month-mini');
-        const daysContainer = document.getElementById('calendar-days-mini');
-        const infoBox = document.getElementById('event-info-mini');
-        
-        this.date.setDate(1); 
-
-        const month = this.date.getMonth();
-        const year = this.date.getFullYear();
-        
-        const lastDay = new Date(year, month + 1, 0).getDate();
-        const prevLastDay = new Date(year, month, 0).getDate();
-        const firstDayIndex = this.date.getDay();
-        const lastDayIndex = new Date(year, month + 1, 0).getDay();
-        const nextDays = 7 - lastDayIndex - 1;
-
-        const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-        
-        monthYear.innerText = `${months[month]} ${year}`;
-        daysContainer.innerHTML = "";
-
-        // Dias do mês anterior
-        for (let x = firstDayIndex; x > 0; x--) {
-            daysContainer.innerHTML += `<li class="inactive" style="opacity:0.3">${prevLastDay - x + 1}</li>`;
-        }
-
-        // Dias do mês atual
-        for (let i = 1; i <= lastDay; i++) {
-            let li = document.createElement('li');
-            li.innerText = i;
-            
-            // Checa se é hoje
-            const isToday = i === this.today.getDate() && month === this.today.getMonth() && year === this.today.getFullYear();
-            if (isToday) {
-                li.classList.add('today');
-            }
-
-            // Checa Eventos Pontuais
-            const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
-            const event = this.events.find(e => e.date === dateStr);
-            
-            // Checa Ranges (Natal)
-            let inRange = false;
-            const currDateObj = new Date(year, month, i);
-            const range = this.ranges.find(r => {
-                const start = new Date(r.start + "T00:00:00");
-                const end = new Date(r.end + "T00:00:00");
-                return currDateObj >= start && currDateObj <= end;
-            });
-
-            if (event) {
-                li.classList.add('has-event');
-                
-                // Ícone visual no detalhe
-                let iconClass = 'fa-circle';
-                if(event.type === 'acao') iconClass = 'fa-handshake';
-                if(event.type === 'feriado') iconClass = 'fa-star';
-
-                li.onclick = () => {
-                    infoBox.innerHTML = `
-                        <strong style="color: var(--color-primary); font-size: 1.1em;">
-                            <i class="fa-solid ${iconClass}"></i> ${i} de ${months[month]}
-                        </strong>
-                        <span style="color: #555;">${event.title}</span>
-                    `;
-                };
-            } else if (range) {
-                 li.classList.add('in-range-mini');
-                 
-                 // Classes para bordas arredondadas no CSS
-                 const rStart = new Date(range.start + "T00:00:00");
-                 const rEnd = new Date(range.end + "T00:00:00");
-                 if (currDateObj.getTime() === rStart.getTime()) li.classList.add('in-range-start');
-                 if (currDateObj.getTime() === rEnd.getTime()) li.classList.add('in-range-end');
-
-                 li.onclick = () => {
-                    infoBox.innerHTML = `
-                        <strong style="color: #c0392b;">
-                            <i class="fa-solid fa-gift"></i> ${range.title}
-                        </strong>
-                        <span>Aproveite nossa decoração e receitas especiais!</span>
-                    `;
-                };
-            } else {
-                 li.onclick = () => {
-                    infoBox.innerHTML = `<strong>${i} de ${months[month]}</strong><span style="color:#999">Nenhum evento programado.</span>`;
-                };
-            }
-            
-            // Mensagem padrão para hoje sem evento
-            if(isToday && !event && !range) {
-                 li.onclick = () => {
-                    infoBox.innerHTML = `<strong>Hoje, ${i} de ${months[month]}</strong><span>Aproveite o dia!</span>`;
-                };
-            }
-
-            daysContainer.appendChild(li);
-        }
-    }
-};
-
-
 /* =======================================================
  * 1. Configuração da Caça aos Presentes (COM ANIMAÇÃO FINAL)
  * ======================================================= */
@@ -2109,12 +1898,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Inicializa o toggle do Chatbot
     setupChatbotToggle();
     
-    // 2. Inicializa o Calendário
-    if(typeof MiniCalendar !== 'undefined') {
-        MiniCalendar.init();
-    }
-    
-    // 3. Demais inicializações
+    // 2. Demais inicializações
     setupTextToSpeech();
     giftHuntGame.init();
     
@@ -2264,3 +2048,61 @@ function updateChristmasCountdown() {
 // Inicia o relógio
 setInterval(updateChristmasCountdown, 1000); 
 updateChristmasCountdown();
+/* =======================================================
+ * 😒 MODO GRINCH (CONTROLE DE TEMA)
+ * ======================================================= */
+function setupGrinchMode() {
+    const grinchBtn = document.getElementById('grinch-btn');
+    const body = document.body;
+
+    // 1. Verifica se o usuário já escolheu ser Grinch antes
+    const isGrinch = localStorage.getItem('modoGrinch') === 'ativado';
+
+    // Se sim, remove o Natal imediatamente ao carregar
+    if (isGrinch) {
+        body.classList.remove('tema-natal');
+        updateGrinchButton(true);
+    }
+
+    // 2. Função para atualizar texto e ícone do botão
+    function updateGrinchButton(active) {
+        if (active) {
+            // Estado: Natal Desativado (Grinch Feliz)
+            grinchBtn.innerHTML = '<i class="fa-solid fa-tree"></i> Restaurar Natal';
+            grinchBtn.setAttribute('aria-label', 'Ativar efeitos de Natal');
+        } else {
+            // Estado: Natal Ativado (Botão normal)
+            grinchBtn.innerHTML = '<i class="fa-regular fa-face-frown"></i> Modo Grinch (Sem Natal)';
+            grinchBtn.setAttribute('aria-label', 'Desativar efeitos de Natal');
+        }
+    }
+
+    // 3. Evento de Clique
+    if (grinchBtn) {
+        grinchBtn.addEventListener('click', () => {
+            // Troca a classe (Se tem, tira. Se não tem, põe)
+            const natalAtivo = body.classList.contains('tema-natal');
+
+            if (natalAtivo) {
+                // VIRAR GRINCH
+                body.classList.remove('tema-natal');
+                localStorage.setItem('modoGrinch', 'ativado'); // Salva na memória
+                updateGrinchButton(true);
+                
+                // Feedback visual rápido (opcional)
+                alert("🎄 Natal pausado! O Grinch roubou os enfeites.");
+            } else {
+                // RESTAURAR NATAL
+                body.classList.add('tema-natal');
+                localStorage.setItem('modoGrinch', 'desativado'); // Salva na memória
+                updateGrinchButton(false);
+            }
+        });
+    }
+}
+
+// Inicializa junto com as outras funções no final do arquivo
+document.addEventListener('DOMContentLoaded', () => {
+    // ... suas outras inicializações ...
+    setupGrinchMode(); 
+});
